@@ -512,8 +512,8 @@ var Globe = /** @class */ (function () {
                     target.y = target.y < -PI_HALF ? -PI_HALF : target.y;
                 }
                 else if (event.touches.length === 2) {
-                    var curDiff = Math.abs(event.touches[0].clientX - event.touches[1].clientX);
-                    var prevDiff = Math.abs(pinchActionPositions[0].x - pinchActionPositions[1].x);
+                    var curDiff = Math.abs(event.touches[0].clientY - event.touches[1].clientY);
+                    var prevDiff = Math.abs(pinchActionPositions[0].y - pinchActionPositions[1].y);
                     pinchActionPositions[0].x = event.touches[0].clientX;
                     pinchActionPositions[0].y = event.touches[0].clientY;
                     pinchActionPositions[1].x = event.touches[1].clientX;
