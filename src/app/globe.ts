@@ -128,7 +128,25 @@ export class Globe {
         mesh.scale.set(1.1, 1.1, 1.1);
         scene.add(mesh);
 
-        geometry = new THREE.BoxGeometry(2, 2, 2);
+        geometry = new THREE.Geometry();
+        geometry.vertices.push(
+          new THREE.Vector3(0,0,0)          
+        );
+        let r = 1;
+        for (let i = Math.PI/6; i < Math.PI*2; i+=Math.PI/3){
+          let y = r*Math.cos(i);
+          let x = r*Math.sin(i);
+          geometry.vertices.push(new THREE.Vector3(x, y, 0))
+        }
+        geometry.faces.push( 
+          new THREE.Face3( 0, 1, 2 ),
+          new THREE.Face3( 0, 2, 3 ),
+          new THREE.Face3( 0, 3, 4 ),
+          new THREE.Face3( 2, 4, 5 ),
+          new THREE.Face3( 2, 5, 6 ),
+          new THREE.Face3( 2, 6, 1 ),
+        );
+        
         geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, 0, -0.5));
 
         point = new THREE.Mesh(geometry);
