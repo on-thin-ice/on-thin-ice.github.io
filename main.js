@@ -257,6 +257,7 @@ var Globe = /** @class */ (function () {
             var raycaster = new three__WEBPACK_IMPORTED_MODULE_0__["Raycaster"]();
             var mouse = { x: 0, y: 0 }, mouseOnDown = { x: 0, y: 0 };
             var rotation = { x: 0, y: 0 }, target = { x: Math.PI * 3 / 2, y: Math.PI / 6.0 }, targetOnDown = { x: 0, y: 0 };
+            var pinchActionPositions = [{ x: 0, y: 0 }, { x: 0, y: 0 }];
             var distance = 100000, distanceTarget = 100000;
             var padding = 40;
             var PI_HALF = Math.PI / 2;
@@ -427,8 +428,8 @@ var Globe = /** @class */ (function () {
                 subgeo.merge(point.geometry, point.matrix);
             }
             function onTouchDown(event) {
+                event.preventDefault();
                 if (event.targetTouches.length === 1) {
-                    event.preventDefault();
                     container.addEventListener('touchmove', onTouchMove, false);
                     container.addEventListener('touchend', onMouseUp, false);
                     container.addEventListener('touchcancel', onMouseUp, false);
@@ -438,6 +439,12 @@ var Globe = /** @class */ (function () {
                     targetOnDown.x = target.x;
                     targetOnDown.y = target.y;
                     container.style.cursor = 'move';
+                }
+                else if (event.targetTouches.length === 2) {
+                    pinchActionPositions[0].x = event.targetTouches[0].clientX;
+                    pinchActionPositions[0].y = event.targetTouches[0].clientY;
+                    pinchActionPositions[1].x = event.targetTouches[1].clientX;
+                    pinchActionPositions[1].y = event.targetTouches[1].clientY;
                 }
             }
             function onMouseDown(event) {
@@ -452,14 +459,34 @@ var Globe = /** @class */ (function () {
                 container.style.cursor = 'move';
             }
             function onTouchMove(event) {
-                var touchDetails = event.targetTouches[0];
-                mouse.x = -touchDetails.clientX;
-                mouse.y = touchDetails.clientY;
-                var zoomDamp = distance / 1000;
-                target.x = targetOnDown.x + (mouse.x - mouseOnDown.x) * 0.005 * zoomDamp;
-                target.y = targetOnDown.y + (mouse.y - mouseOnDown.y) * 0.005 * zoomDamp;
-                target.y = target.y > PI_HALF ? PI_HALF : target.y;
-                target.y = target.y < -PI_HALF ? -PI_HALF : target.y;
+                if (event.targetTouches.length === 1) {
+                    var touchDetails = event.targetTouches[0];
+                    mouse.x = -touchDetails.clientX;
+                    mouse.y = touchDetails.clientY;
+                    var zoomDamp = distance / 1000;
+                    target.x = targetOnDown.x + (mouse.x - mouseOnDown.x) * 0.005 * zoomDamp;
+                    target.y = targetOnDown.y + (mouse.y - mouseOnDown.y) * 0.005 * zoomDamp;
+                    target.y = target.y > PI_HALF ? PI_HALF : target.y;
+                    target.y = target.y < -PI_HALF ? -PI_HALF : target.y;
+                }
+                else if (event.targetTouches.length === 2) {
+                    var curDiff = Math.abs(event.targetTouches[0].clientX - event.targetTouches[1].clientX);
+                    var prevDiff = Math.abs(pinchActionPositions[0].x - pinchActionPositions[1].x);
+                    pinchActionPositions[0].x = event.targetTouches[0].clientX;
+                    pinchActionPositions[0].y = event.targetTouches[0].clientY;
+                    pinchActionPositions[1].x = event.targetTouches[1].clientX;
+                    pinchActionPositions[1].y = event.targetTouches[1].clientY;
+                    if (prevDiff > 0) {
+                        if (curDiff > prevDiff) {
+                            // The distance between the two pointers has increased
+                            zoom(curDiff - prevDiff);
+                        }
+                        if (curDiff < prevDiff) {
+                            // The distance between the two pointers has decreased
+                            zoom(curDiff - prevDiff);
+                        }
+                    }
+                }
             }
             function onMouseMove(event) {
                 mouse.x = -event.clientX;
