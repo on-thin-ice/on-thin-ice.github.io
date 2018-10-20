@@ -17,8 +17,6 @@ export class AppComponent implements AfterViewInit {
       
       var xhr;
 
-
-
       var parser = function processData(allText) {
 
           var allTextLines = allText.split(/\r\n|\n/).filter(function(s){

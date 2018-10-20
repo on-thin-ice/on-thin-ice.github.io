@@ -96,7 +96,7 @@ export class Globe {
         shader = Shaders['earth'];
         uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 
-        uniforms['texture'].value = THREE.ImageUtils.loadTexture(imgDir + 'world.jpg');
+        uniforms['texture'].value = THREE.ImageUtils.loadTexture(imgDir + 'venus.jpg');
 
         material = new THREE.ShaderMaterial({
 
@@ -128,7 +128,7 @@ export class Globe {
         mesh.scale.set(1.1, 1.1, 1.1);
         scene.add(mesh);
 
-        geometry = new THREE.BoxGeometry(0.75, 0.75, 1);
+        geometry = new THREE.BoxGeometry(2, 2, 2);
         geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, 0, -0.5));
 
         point = new THREE.Mesh(geometry);
@@ -198,7 +198,7 @@ export class Globe {
           lng = data[i + 1];
           color = colorFnWrapper(data, i);
           size = data[i + 2];
-          size = size * 200;
+          size = 1;
           addPoint(lat, lng, size, color, subgeo);
         }
         if (opts.animated) {
