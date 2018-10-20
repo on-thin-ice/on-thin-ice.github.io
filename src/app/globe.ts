@@ -62,12 +62,13 @@ export class Globe {
 
       var camera, scene, renderer, w, h;
       var mesh, atmosphere, point;
+      var points;
 
       var overRenderer;
 
       var curZoomSpeed = 0;
       var zoomSpeed = 50;
-
+      var raycaster = new THREE.Raycaster();
       var mouse = { x: 0, y: 0 }, mouseOnDown = { x: 0, y: 0 };
       var rotation = { x: 0, y: 0 },
         target = { x: Math.PI * 3 / 2, y: Math.PI / 6.0 },
@@ -96,7 +97,7 @@ export class Globe {
         shader = Shaders['earth'];
         uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 
-        uniforms['texture'].value = THREE.ImageUtils.loadTexture(imgDir + 'venus.jpg');
+        uniforms['texture'].value = THREE.ImageUtils.loadTexture(imgDir + 'world.jpg');
 
         material = new THREE.ShaderMaterial({
 
@@ -132,7 +133,7 @@ export class Globe {
         geometry.vertices.push(
           new THREE.Vector3(0,0,0)          
         );
-        let r = 1;
+        let r = 2.0;
         for (let i = Math.PI/6; i < Math.PI*2; i+=Math.PI/3){
           let y = r*Math.cos(i);
           let x = r*Math.sin(i);
@@ -251,6 +252,7 @@ export class Globe {
               morphTargets: true
             }));
           }
+          points = this.points;
           scene.add(this.points);
         }
       }
@@ -352,7 +354,7 @@ export class Globe {
       function zoom(delta) {
         distanceTarget -= delta;
         distanceTarget = distanceTarget > 1000 ? 1000 : distanceTarget;
-        distanceTarget = distanceTarget < 350 ? 350 : distanceTarget;
+        distanceTarget = distanceTarget < 220 ? 220 : distanceTarget;
       }
 
       function animate() {
@@ -362,6 +364,23 @@ export class Globe {
 
       function render() {
         zoom(curZoomSpeed);
+        
+        raycaster.setFromCamera( mouse, camera );
+        if (points){
+          var intersects, INTERSECTED;
+          var attributes = points.geometry.attributes;
+          intersects = raycaster.intersectObject( points );
+          if ( intersects.length > 0 ) {
+            if ( INTERSECTED != intersects[ 0 ].faceIndex ) {
+              if (point.geometry.faces.length> intersects[ 0 ].faceIndex){
+                point.geometry.faces[intersects[ 0 ].faceIndex].color = new THREE.Color(0xff0000); 
+                INTERSECTED = intersects[ 0 ].faceIndex;
+              }
+              
+            }
+          }
+        }
+        
 
         rotation.x += (target.x - rotation.x) * 0.1;
         rotation.y += (target.y - rotation.y) * 0.1;

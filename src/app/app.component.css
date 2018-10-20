@@ -41,14 +41,14 @@ html {
   }
 
   #title {
-    color: #ffffff;
+    color: #cccccc;
     position: absolute;
     top: 50px;
     left: 20px;
     font-weight: lighter;
     background-color: rgba(0,0,0,0.2);
     border-radius: 3px;
-    font-size:10vw;
+    font-size:30pt;
     padding: 10px;
   }
 

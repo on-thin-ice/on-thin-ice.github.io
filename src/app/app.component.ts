@@ -31,7 +31,7 @@ export class AppComponent implements AfterViewInit {
               var lineValues = allTextLines[i].split(/[ ,]+/).filter(function(s){return s!=""});
 
               for (var j = 0; j < 1024; j++){
-                  if (i%4==0&&j%4==0&&lineValues[j]!=0) {
+                  if (i%4==0&&j%4==0) {
                       data[index++] = -90.0+0.3515625 * i;
                       data[index++] = 0.3515625 * j;
                       data[index++] = lineValues[j]*0.01;
