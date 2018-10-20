@@ -310,10 +310,17 @@ var Globe = /** @class */ (function () {
                 renderer.domElement.style.position = 'absolute';
                 container.appendChild(renderer.domElement);
                 container.addEventListener('mousedown', onMouseDown, false);
-                container.addEventListener('mousewheel', onMouseWheel, false);
+                container.addEventListener('touchstart', onTouchDown, false);
+                container.addEventListener('wheel', onMouseWheel, false);
                 document.addEventListener('keydown', onDocumentKeyDown, false);
                 window.addEventListener('resize', onWindowResize, false);
                 container.addEventListener('mouseover', function () {
+                    overRenderer = true;
+                }, false);
+                container.addEventListener('touchend', function () {
+                    overRenderer = true;
+                }, false);
+                container.addEventListener('touchcancel', function () {
                     overRenderer = true;
                 }, false);
                 container.addEventListener('mouseout', function () {
@@ -419,16 +426,40 @@ var Globe = /** @class */ (function () {
                 }
                 subgeo.merge(point.geometry, point.matrix);
             }
+            function onTouchDown(event) {
+                event.preventDefault();
+                if (event.targetTouches.length === 1) {
+                    container.addEventListener('touchmove', onTouchMove, false);
+                    container.addEventListener('touchend', onMouseUp, false);
+                    container.addEventListener('touchcancel', onMouseUp, false);
+                    var touchDetails = event.targetTouches[0];
+                    mouseOnDown.x = -touchDetails.clientX;
+                    mouseOnDown.y = touchDetails.clientY;
+                    targetOnDown.x = target.x;
+                    targetOnDown.y = target.y;
+                    container.style.cursor = 'move';
+                }
+            }
             function onMouseDown(event) {
                 event.preventDefault();
                 container.addEventListener('mousemove', onMouseMove, false);
                 container.addEventListener('mouseup', onMouseUp, false);
-                container.addEventListener('mouseout', onMouseOut, false);
+                container.addEventListener('mouseout', onMouseUp, false);
                 mouseOnDown.x = -event.clientX;
                 mouseOnDown.y = event.clientY;
                 targetOnDown.x = target.x;
                 targetOnDown.y = target.y;
                 container.style.cursor = 'move';
+            }
+            function onTouchMove(event) {
+                var touchDetails = event.targetTouches[0];
+                mouse.x = -touchDetails.clientX;
+                mouse.y = touchDetails.clientY;
+                var zoomDamp = distance / 1000;
+                target.x = targetOnDown.x + (mouse.x - mouseOnDown.x) * 0.005 * zoomDamp;
+                target.y = targetOnDown.y + (mouse.y - mouseOnDown.y) * 0.005 * zoomDamp;
+                target.y = target.y > PI_HALF ? PI_HALF : target.y;
+                target.y = target.y < -PI_HALF ? -PI_HALF : target.y;
             }
             function onMouseMove(event) {
                 mouse.x = -event.clientX;
@@ -442,13 +473,11 @@ var Globe = /** @class */ (function () {
             function onMouseUp(event) {
                 container.removeEventListener('mousemove', onMouseMove, false);
                 container.removeEventListener('mouseup', onMouseUp, false);
-                container.removeEventListener('mouseout', onMouseOut, false);
+                container.removeEventListener('mouseout', onMouseUp, false);
+                container.removeEventListener('touchmove', onTouchMove, false);
+                container.removeEventListener('touchend', onMouseUp, false);
+                container.removeEventListener('touchcancel', onMouseUp, false);
                 container.style.cursor = 'auto';
-            }
-            function onMouseOut(event) {
-                container.removeEventListener('mousemove', onMouseMove, false);
-                container.removeEventListener('mouseup', onMouseUp, false);
-                container.removeEventListener('mouseout', onMouseOut, false);
             }
             function onMouseWheel(event) {
                 event.preventDefault();
@@ -470,9 +499,9 @@ var Globe = /** @class */ (function () {
                 }
             }
             function onWindowResize(event) {
-                camera.aspect = container.offsetWidth / container.offsetHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(container.offsetWidth, container.offsetHeight);
+                //camera.aspect = container.offsetWidth / container.offsetHeight;
+                //camera.updateProjectionMatrix();
+                //renderer.setSize(container.offsetWidth, container.offsetHeight);
             }
             function zoom(delta) {
                 distanceTarget -= delta;
@@ -612,7 +641,7 @@ Object(_angular_platform_browser_dynamic__WEBPACK_IMPORTED_MODULE_1__["platformB
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! C:\Users\Ben\Documents\GitHub\on-thin-ice.github.io\src\main.ts */"./src/main.ts");
+module.exports = __webpack_require__(/*! C:\Users\Ben\Documents\GitHub\frontend\src\main.ts */"./src/main.ts");
 
 
 /***/ })
