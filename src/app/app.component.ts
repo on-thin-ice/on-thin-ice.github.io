@@ -12,7 +12,7 @@ import { Globe } from './globe';
 export class AppComponent implements AfterViewInit {
   @ViewChild('container') containerRef :ElementRef; 
   ngAfterViewInit(): void {
-      var gl:Globe = new Globe(this.containerRef.nativeElement,{});
+      var gl:Globe = new Globe(this.containerRef.nativeElement,{imgDir:"/assets/globe/"});
 
       
       var xhr;
