@@ -427,8 +427,8 @@ var Globe = /** @class */ (function () {
                 subgeo.merge(point.geometry, point.matrix);
             }
             function onTouchDown(event) {
-                event.preventDefault();
                 if (event.targetTouches.length === 1) {
+                    event.preventDefault();
                     container.addEventListener('touchmove', onTouchMove, false);
                     container.addEventListener('touchend', onMouseUp, false);
                     container.addEventListener('touchcancel', onMouseUp, false);
